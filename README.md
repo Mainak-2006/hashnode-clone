@@ -185,14 +185,9 @@ Current progress: **Phase 1 Complete** - Scaffolding, authentication, and databa
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ## 👤 Author
 
 *****REMOVED***** - [GitHub](https://github.com/Mainak-2006)
 
 ---
-
-*Built with ❤️ using the MERN stack and inspired by Hashnode's developer blogging platform.*
