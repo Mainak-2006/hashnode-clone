@@ -232,7 +232,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 
 ## 👤 Author
 
-*****REMOVED*****  
+**Mainak Kundu**  
 MERN Stack Developer  
 Portfolio: https://github.com/Mainak-2006  
 Inspired by: [Hashnode](https://hashnode.com)
