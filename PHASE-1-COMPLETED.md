@@ -52,7 +52,7 @@ This phase established the foundational MERN stack setup for the developer blogg
 - ✅ Health check route `GET /`
 
 ### 7. Git History Management
-- ✅ Removed `node_modules/` from git tracking
+**Mainak Kundu**
 - ✅ Removed `.vscode/` from git tracking
 - ✅ Force-pushed clean history to GitHub
 - ✅ Updated `.gitignore` with proper entries
