@@ -188,6 +188,6 @@ Current progress: **Phase 1 Complete** - Scaffolding, authentication, and databa
 
 ## 👤 Author
 
-*****REMOVED***** - [GitHub](https://github.com/Mainak-2006)
+**Mainak Kundu** - [GitHub](https://github.com/Mainak-2006)
 
 ---

@@ -52,7 +52,7 @@ This phase established the foundational MERN stack setup for the developer blogg
 - ✅ Health check route `GET /`
 
 ### 7. Git History Management
-*****REMOVED*****
+**Mainak Kundu**
 - ✅ Removed `.vscode/` from git tracking
 - ✅ Force-pushed clean history to GitHub
 - ✅ Updated `.gitignore` with proper entries
@@ -232,7 +232,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 
 ## 👤 Author
 
-*****REMOVED*****  
+**Mainak Kundu**  
 MERN Stack Developer  
 Portfolio: https://github.com/Mainak-2006  
 Inspired by: [Hashnode](https://hashnode.com)
