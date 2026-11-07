@@ -5,6 +5,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const { connectDB, disconnectDB } = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const postRoutes = require('./routes/postRoutes');
+const tagRoutes = require('./routes/tagRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 const app = express();
@@ -28,7 +30,7 @@ app.get('/', (_req, res) => {
   res.json({
     message: 'Hashnode Clone API is running',
     version: '1.0.0',
-    phase: 1,
+    phase: 2,
   });
 });
 
@@ -42,6 +44,8 @@ app.get('/api/health', (_req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/tags', tagRoutes);
 
 // 404 + centralized error handling
 app.use(notFound);

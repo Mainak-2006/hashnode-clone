@@ -82,6 +82,8 @@ The final implementation follows the PRD: `Post` model and `/api/posts` routes r
 
 ## Phase 2 — Blog CRUD & Markdown (Days 3–6, 50%)
 
+> **Status: Days 3–4 complete (Nov 8, 2026).** `Post`/`Tag` models, the full post CRUD API with server-side ownership, drafts hidden from public routes, and the tags API are implemented and verified with a 64-check API matrix. Days 5–6 (Markdown editor, dashboard, feed shell) remain.
+
 ### Day 3 — Models and read/create APIs
 
 - Create `Post` and `Tag` models per the PRD.
@@ -264,8 +266,8 @@ If a day slips, take time from Day 13’s buffer — never from authentication, 
 
 - [x] Day 1 — Backend repaired; auth APIs complete
 - [x] Day 2 — Client scaffolded; auth UI complete → `phase-1-auth`
-- [ ] Day 3 — Post/Tag models; create/read APIs
-- [ ] Day 4 — Ownership; edit/delete; tags API
+- [x] Day 3 — Post/Tag models; create/read APIs
+- [x] Day 4 — Ownership; edit/delete; tags API
 - [ ] Day 5 — Markdown editor + preview + highlighting
 - [ ] Day 6 — Post editor + dashboard + feed shell → `phase-2-content`
 - [ ] Day 7 — Public feed + search + pagination

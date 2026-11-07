@@ -1,8 +1,8 @@
 # Hashnode Clone — MERN Developer Blogging Platform
 
-A developer-first blogging platform inspired by [Hashnode](https://hashnode.com), built with the MERN stack. This repository currently contains **Phase 1: the authentication foundation** of a 13-day build plan (see [`PHASES.md`](./PHASES.md)).
+A developer-first blogging platform inspired by [Hashnode](https://hashnode.com), built with the MERN stack. The authentication foundation and the **content API (Post + Tag)** are complete; Markdown editing and the public UI follow in the remaining phases of the 13-day plan (see [`PHASES.md`](./PHASES.md)).
 
-> **Status:** Phase 1 complete — registration, login, persisted JWT sessions, protected routes, and the React app shell all work end to end.
+> **Status:** Phase 1 complete. Phase 2 Days 3–4 complete — Post/Tag models, CRUD, ownership checks, slugs, excerpts, reading time, pagination, search, and tag APIs are live.
 
 ---
 
@@ -15,11 +15,17 @@ A developer-first blogging platform inspired by [Hashnode](https://hashnode.com)
 - **Protected routes** — `/dashboard` redirects unauthenticated visitors to `/login` and returns them after login
 - **Global 401 handling** — expired or invalid tokens are cleared automatically and the user is signed out
 - **React auth UI** — split-screen login/register pages, validation, pending states, readable errors, logout, mobile navigation
+- **Post & Tag models** — PRD-aligned schemas with author/tag relationships
+- **Post API** — create drafts or published posts, public feed, single post by slug, search, tag filter, and pagination
+- **Ownership enforcement** — only the author can update, delete, or load their own drafts (server-side `403`)
+- **Draft privacy** — drafts never appear in the public feed, search results, or by direct slug
+- **Slugs, excerpts & reading time** — unique slugs with collision suffixes, Markdown-stripped excerpts, and a reading-time virtual
+- **Tag API** — find-or-create tags (max 5), published-post counts, and per-tag post lists
 - **Consistent API errors** — centralized `400/401/403/404/500` responses
 - **Health check** — `GET /api/health` reports server and database status
 - **In-memory database option** — run without installing MongoDB by setting `USE_MEMORY_DB=true`
 
-Post CRUD, Markdown editing, tags, feed, search, and profiles arrive in Phases 2–4.
+Post CRUD is available through the API. The Markdown editor, feed UI, tag pages, and profiles arrive in Days 5–9.
 
 ---
 
@@ -71,14 +77,23 @@ hashnode-clone/
 │   └── vite.config.js
 ├── server/                      # Express API
 │   ├── config/db.js             # Mongo connection + memory-DB fallback
-│   ├── controllers/authController.js
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── postController.js    # CRUD, ownership, feed, search, pagination
+│   │   └── tagController.js     # tags with counts, posts by tag
 │   ├── middleware/
 │   │   ├── authMiddleware.js    # Bearer JWT verification
 │   │   └── errorMiddleware.js   # 404 + centralized errors
-│   ├── models/User.js           # PRD-aligned User schema
-│   ├── routes/authRoutes.js
+│   ├── models/
+│   │   ├── User.js              # PRD-aligned User schema
+│   │   ├── Post.js              # title, slug, content, excerpt, status, author, tags
+│   │   └── Tag.js               # unique name + slug
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── postRoutes.js
+│   │   └── tagRoutes.js
 │   ├── seed/seed.js             # Demo user seeder
-│   ├── utils/                   # generateToken, ApiError, asyncHandler
+│   ├── utils/                   # token, errors, slugify, excerpt, pagination
 │   ├── .env.example
 │   ├── server.js
 │   └── package.json
@@ -242,6 +257,78 @@ curl http://localhost:5000/api/auth/me -H "Authorization: Bearer <jwt>"
 
 Returns `{ user }`. Missing or invalid token → `401`.
 
+### Post routes
+
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| `GET` | `/api/posts` | Public | Published feed, newest first, paginated |
+| `GET` | `/api/posts/:slug` | Public | Single published post (drafts → `404`) |
+| `POST` | `/api/posts` | Protected | Create a draft or published post |
+| `PUT` | `/api/posts/:id` | Protected (owner) | Update a post; non-owner → `403` |
+| `DELETE` | `/api/posts/:id` | Protected (owner) | Delete a post; non-owner → `403` |
+| `GET` | `/api/posts/mine` | Protected | All of the current user's drafts + published posts |
+| `GET` | `/api/posts/id/:id` | Protected (owner) | Load any own post, including drafts |
+
+**Create**
+
+```bash
+curl -X POST http://localhost:5000/api/posts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <jwt>" \
+  -d '{
+    "title": "Building a REST API with Express",
+    "content": "# Hello\\n\\nSome **Markdown** content.",
+    "tags": ["express", "mongodb"],
+    "coverImage": "https://example.com/cover.png",
+    "status": "draft"
+  }'
+```
+
+**`201 Created`** → `{ message, post }`. The post includes `id`, generated `slug`, generated `excerpt`, `readingTime`, populated `author` (`name`, `avatarUrl`, `bio`), and populated `tags`.
+
+- `status` defaults to `draft`.
+- Tags are find-or-create, deduped, and capped at **5** (`400` beyond that).
+- Duplicate titles get a unique slug suffix (`-2`, `-3`, …).
+- Updating a title regenerates the slug.
+
+**Feed query parameters**
+
+| Param | Example | Behavior |
+|---|---|---|
+| `search` or `q` | `?search=express` | Case-insensitive title search |
+| `tag` | `?tag=mongodb` | Published posts for one tag |
+| `page` | `?page=2` | 1-based page (default `1`) |
+| `limit` | `?limit=10` | Page size (default `10`, max `50`) |
+
+Response: `{ posts, pagination: { page, limit, total, totalPages, hasMore } }`.
+
+**Own posts**
+
+```bash
+GET /api/posts/mine?status=draft
+GET /api/posts/id/<postId>
+```
+
+`/mine` returns drafts and published posts, optionally filtered by `status`. `/id/:id` is owner-only and is what the editor uses to load a draft.
+
+**Update** accepts any subset of `title`, `content`, `coverImage`, `status`, `tags`. Sending `"tags": null` clears tags. Empty updates → `400`.
+
+**Delete** returns `{ message, id }`.
+
+### Tag routes
+
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| `GET` | `/api/tags` | Public | All tags with published-post counts |
+| `GET` | `/api/tags/:slug/posts` | Public | Published posts under one tag |
+
+```bash
+curl http://localhost:5000/api/tags
+# { "tags": [{ "id": "...", "name": "mongodb", "slug": "mongodb", "count": 3 }] }
+```
+
+Tag counts include published posts only; tags used solely by drafts appear with `count: 0`. Unknown tags on `/api/tags/:slug/posts` → `404`.
+
 ### Error format
 
 ```json
@@ -291,6 +378,24 @@ This project follows a 13-day plan. See [`PHASES.md`](./PHASES.md) for daily tas
 | **2 — CRUD & Markdown** | 3–6 | 50% | Post/Tag models, CRUD, ownership, editor, dashboard | `phase-2-content` |
 | **3 — Feed, Search & Profiles** | 7–9 | 75% | Public feed, search, tag pages, post detail, profiles | `phase-3-public` |
 | **4 — Polish, QA & Deploy** | 10–13 | 100% | Responsive polish, security QA, deployment, docs | `v1.0.0` |
+
+**Current progress:** Phase 1 complete (tagged `phase-1-auth`). Phase 2 is in progress — Days 3–4 (Post/Tag models and the full content API) are complete; Days 5–6 add the Markdown editor, dashboard, and feed shell before the `phase-2-content` gate.
+
+---
+
+## Verification performed for Phase 2 (Days 3–4)
+
+A 64-check API matrix covers creation, reads, ownership, and tags:
+
+- Create draft/published posts → `201`, with generated slug, Markdown-stripped excerpt, `readingTime`, and populated author/tags
+- Drafts hidden from the public feed, search, and `GET /api/posts/:slug` (`404`)
+- `GET /api/posts/mine` and owner-only `GET /api/posts/id/:id` (non-owner → `403`, anonymous → `401`)
+- Owner update/delete succeed; non-owner update/delete → `403`; bad IDs → `400`
+- Validation: missing title/content, invalid status, non-array or empty tags, more than 5 tags → `400`
+- Unique slugs for duplicate titles (`-2`, `-3`, …); renaming regenerates the slug and retires the old one
+- Case-insensitive slug lookup, `q`/`search` aliases, regex-escaped search, tag filtering, and pagination (`page`, `limit` capped at 50)
+- Tag find-or-create, dedupe, lowercasing, `tags: null` clearing, published-only counts, and `404` for unknown tags
+- Phase 1 auth endpoints still pass
 
 ---
 
