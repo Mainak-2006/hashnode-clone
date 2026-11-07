@@ -1,45 +1,68 @@
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const generateToken = require('../utils/generateToken');
+const ApiError = require('../utils/ApiError');
+const asyncHandler = require('../utils/asyncHandler');
 
-// Register user
-exports.register = async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
-    const user = new User({ username, email, password });
-    await user.save();
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    if (error.code === 11000) {
-      res.status(400).json({ message: 'Username or email already exists' });
-    } else {
-      res.status(500).json({ message: error.message });
-    }
+const normalizeEmail = (email) => String(email || '').trim().toLowerCase();
+
+const register = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body || {};
+
+  if (!name || !email || !password) {
+    throw new ApiError(400, 'Name, email, and password are required');
   }
-};
 
-// Login user
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+  const normalizedEmail = normalizeEmail(email);
+  const existingUser = await User.findOne({ email: normalizedEmail });
 
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
-
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'default_secret', { expiresIn: '1d' });
-    res.json({ token, user: { id: user._id, username: user.username, email: user.email } });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  if (existingUser) {
+    throw new ApiError(400, 'An account with this email already exists');
   }
-};
 
-// Get current user (protected route placeholder)
-exports.getCurrentUser = async (req, res) => {
-  try {
-    // In a real app, you'd decode the token from middleware
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  const user = await User.create({
+    name: String(name).trim(),
+    email: normalizedEmail,
+    password,
+  });
+
+  const token = generateToken(user);
+
+  res.status(201).json({
+    message: 'Account created successfully',
+    token,
+    user: user.toJSON(),
+  });
+});
+
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body || {};
+
+  if (!email || !password) {
+    throw new ApiError(400, 'Email and password are required');
   }
-};
+
+  const user = await User.findOne({ email: normalizeEmail(email) }).select('+password');
+
+  if (!user) {
+    throw new ApiError(401, 'Invalid email or password');
+  }
+
+  const passwordMatches = await user.comparePassword(password);
+  if (!passwordMatches) {
+    throw new ApiError(401, 'Invalid email or password');
+  }
+
+  const token = generateToken(user);
+
+  res.json({
+    message: 'Logged in successfully',
+    token,
+    user: user.toJSON(),
+  });
+});
+
+const getMe = asyncHandler(async (req, res) => {
+  res.json({ user: req.user.toJSON() });
+});
+
+module.exports = { register, login, getMe };

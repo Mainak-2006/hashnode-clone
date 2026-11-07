@@ -6,3 +6,4 @@ node_env/
 .DS_Store
 node_modules/
 .vscode/
+client/dist/

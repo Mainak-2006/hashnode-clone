@@ -1,241 +1,246 @@
-# 🎉 Phase 1 COMPLETED - Hashnode Clone MERN Platform
+# Phase 1 — Foundation & Authentication ✅
 
-**Status:** ✅ 100% Complete  
-**GitHub:** https://github.com/Mainak-2006/hashnode-clone  
-**Date:** November 5, 2026
-
----
-
-## 📊 Phase 1 Summary
-
-This phase established the foundational MERN stack setup for the developer blogging platform, including user authentication, database schema, and project scaffolding.
+**Status:** Complete  
+**Date:** November 7, 2026  
+**Plan:** Days 1–2 of the 13-day roadmap (`PHASES.md`)  
+**Milestone tag:** `phase-1-auth`
 
 ---
 
-## ✅ Completed Features
+## Summary
 
-### 1. Project Scaffolding
-- ✅ Created `server/` and `client/` directories
-- ✅ Initialized Node.js project with `npm init -y`
-- ✅ Installed core dependencies: `express`, `mongoose`, `jsonwebtoken`, `bcryptjs`, `cors`, `dotenv`
-- ✅ Set up Vite React frontend setup
+Phase 1 delivers a working authentication foundation for the Hashnode Clone: an Express/Mongoose API with bcrypt password hashing and JWT sessions, plus a React/Vite client with persisted login, protected routes, and a responsive app shell.
 
-### 2. Backend Configuration
-- ✅ `server/index.js` - Main Express entry point with MongoDB connection
-- ✅ `server/.env.example` - Environment variable template
-- ✅ `server/.gitignore` - Properly excludes `node_modules/`, `.vscode/`, `.env*`
-
-### 3. User Model & Authentication
-- ✅ `server/models/User.js` - Mongoose schema with:
-  - Username (unique, trimmed, minlength 3)
-  - Email (unique, validated format)
-  - Password (minlength 6, hashed with bcryptjs)
-  - Profile picture URL, bio (max 200 chars), timestamps
-- ✅ Password hashing via `pre('save')` middleware
-- ✅ `comparePassword` method for login validation
-
-### 4. Authentication Controllers
-- ✅ `server/controllers/authController.js`
-  - `register` - Creates new user, returns success message
-  - `login` - Verifies credentials, generates JWT token
-  - `getCurrentUser` - Protected route placeholder
-- ✅ JWT sign with 1-day expiration
-
-### 5. Auth Routes
-- ✅ `server/routes/auth.js` - Express router with:
-  - `POST /register` - Public endpoint
-  - `POST /login` - Public endpoint
-  - `GET /me` - Protected endpoint (placeholder)
-
-### 6. Blog Placeholder Routes
-- ✅ `server/routes/blogs.js` - Basic CRUD structure
-- ✅ Health check route `GET /`
-
-### 7. Git History Management
-**Mainak Kundu**
-- ✅ Removed `.vscode/` from git tracking
-- ✅ Force-pushed clean history to GitHub
-- ✅ Updated `.gitignore` with proper entries
-
-### 8. Documentation
-- ✅ `README.md` - Comprehensive project documentation
-- ✅ `PHASES.md` - 4-phase development roadmap (25%/50%/75%/100%)
+The earlier placeholder backend (`username`/`profilePicture`, `/api/blogs`, a non-functional `/me`) was replaced with the PRD-aligned structure before the client was built.
 
 ---
 
-## 📁 Phase 1 File Structure
+## What was built
 
-```
-hashnode-clone/
-├── .gitignore              # Git exclusions
-├── PHASES.md               # Roadmap (4 phases)
-├── README.md               # Project documentation
-├── server/                 # Node.js/Express backend
-│   ├── index.js            # Server entry point
-│   ├── models/User.js      # Mongoose User schema
-│   ├── controllers/authController.js  # Auth logic
-│   ├── routes/auth.js      # Auth routes
-│   ├── routes/blogs.js     # Blog placeholder routes
-│   ├── .env.example        # Environment vars template
-│   └── package.json        # Server dependencies
-├── client/                 # React Vite frontend
-│   ├── package.json        # Client dependencies
-│   └── ... (pending Phase 2)
-└── hashnode-clone.docx     # Original reference document
+### 1. Backend structure (PRD-aligned)
+
+```text
+server/
+├── config/db.js
+├── controllers/authController.js
+├── middleware/authMiddleware.js
+├── middleware/errorMiddleware.js
+├── models/User.js
+├── routes/authRoutes.js
+├── utils/ApiError.js
+├── utils/asyncHandler.js
+├── utils/generateToken.js
+├── seed/seed.js
+├── .env.example
+├── server.js
+└── package.json
 ```
 
----
+- `server.js` — Express app, CORS, JSON parsing, health routes, startup, graceful shutdown
+- `config/db.js` — MongoDB connection with an optional in-memory fallback (`USE_MEMORY_DB=true`)
+- `middleware/errorMiddleware.js` — centralized `400/401/403/404/500` responses, Mongoose and duplicate-key handling
+- `utils/generateToken.js` — JWT signing with `{ id }` payload and configurable expiry
 
-## 🛠️ Technical Details
+### 2. User model
 
-### MongoDB Connection
-```javascript
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/hashnode-clone')
-  .then(() => console.log('📊 MongoDB connected'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  });
+| Field | Type | Rules |
+|---|---|---|
+| `name` | String | Required, 2–60 chars, trimmed |
+| `email` | String | Required, unique, lowercase, validated format |
+| `password` | String | Required, min 6 chars, `select: false`, bcrypt-hashed |
+| `bio` | String | Optional, max 200 chars |
+| `avatarUrl` | String | Optional |
+| `createdAt` / `updatedAt` | Date | Mongoose timestamps |
+
+- `pre('save')` hashes the password with **bcryptjs, 12 salt rounds**
+- `comparePassword()` verifies credentials
+- `toJSON()` exposes `id`, removes `_id`, `__v`, and `password`
+
+### 3. Authentication API
+
+| Method | Endpoint | Access | Behavior |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Validates input, rejects duplicate email, returns `201 { message, token, user }` |
+| `POST` | `/api/auth/login` | Public | Verifies credentials, returns `{ message, token, user }` |
+| `GET` | `/api/auth/me` | Private | Returns `{ user }` for a valid bearer token |
+| `GET` | `/api/health` | Public | Reports API and database status |
+| `GET` | `/` | Public | API metadata |
+
+Auth errors are consistent:
+
+- Missing fields → `400`
+- Duplicate email → `400`
+- Wrong email/password → `401`
+- Missing/expired/invalid token → `401`
+- Unknown route → `404`
+- Unhandled error → `500`
+
+### 4. Client structure
+
+```text
+client/
+├── src/
+│   ├── api/axios.js             # JWT request interceptor + 401 response handling
+│   ├── components/
+│   │   ├── auth/AuthLayout.jsx
+│   │   ├── layout/Layout.jsx
+│   │   ├── layout/Navbar.jsx
+│   │   ├── layout/Footer.jsx
+│   │   ├── layout/ProtectedRoute.jsx
+│   │   ├── ui/Avatar.jsx
+│   │   ├── ui/ErrorMessage.jsx
+│   │   ├── ui/LoadingSpinner.jsx
+│   │   └── Brand.jsx
+│   ├── context/AuthContext.jsx
+│   ├── hooks/useAuth.js
+│   ├── hooks/useDocumentTitle.js
+│   ├── pages/Home.jsx
+│   ├── pages/Login.jsx
+│   ├── pages/Register.jsx
+│   ├── pages/Dashboard.jsx
+│   ├── pages/NotFound.jsx
+│   ├── styles/global.css
+│   ├── utils/errors.js
+│   ├── App.jsx
+│   └── main.jsx
+├── public/favicon.svg
+├── .env.example
+├── index.html
+├── package.json
+└── vite.config.js
 ```
 
-### User Schema Fields
-| Field | Type | Requirements |
-|-------|------|-------------|
-| `username` | String | Required, unique, minlength: 3 |
-| `email` | String | Required, unique, valid email format |
-| `password` | String | Required, minlength: 6 |
-| `profilePicture` | String | Default: '' |
-| `profileBio` | String | Max: 200 characters |
-| `createdAt` | Date | Default: Date.now |
+### 5. Client behavior
 
-### bcryptjs Configuration
-- Salt rounds: 10 (industry standard)
-- Hashing happens via `pre('save')` middleware
-- Comparison via `user.comparePassword(candidatePassword)`
-
-### JWT Configuration
-```javascript
-const token = jwt.sign(
-  { userId: user._id },
-  process.env.JWT_SECRET || 'default_secret',
-  { expiresIn: '1d' }
-);
-```
+- **AuthContext** owns `user`, `token`, `initializing`, `isAuthenticated`, `register`, `login`, `logout`, `updateUser`
+- Session restored on load via `GET /api/auth/me`
+- Token persisted under **`hashnode_token`** in localStorage
+- Axios attaches the bearer token and clears it on `401` (except login/register)
+- **ProtectedRoute** shows a restore spinner, then redirects to `/login` with the intended path
+- **Login/Register** include field validation, password visibility toggles, pending states, and readable API errors
+- **Dashboard** greets the authenticated user and shows account details
+- **Navbar** is responsive with a mobile menu, user avatar, and logout
+- **Home** is a branded landing page with feature and roadmap sections
+- **404** page and skip-to-content link included
+- Responsive layout verified at 1280, 1024, 768, and 390 px
 
 ---
 
-## 🚀 How to Run Phase 1
+## Verification performed
 
-### Prerequisites
-- Node.js (v14+)
-- MongoDB (local or Atlas cloud)
-- Git
+### API matrix (curl)
 
-### Installation
+| Case | Result |
+|---|---|
+| Register new user | `201`, token + sanitized user |
+| Register duplicate email | `400` |
+| Login correct credentials | `200`, token + user |
+| Login wrong password | `401` |
+| `GET /me` with token | `200`, user |
+| `GET /me` without token | `401` |
+| `GET /me` with invalid token | `401` |
+| Register with missing fields | `400` |
+| Unknown route | `404` |
+| Health check | `200`, database connected |
+
+### Password storage
+
+| Check | Result |
+|---|---|
+| Stored value is plaintext | ❌ No |
+| Stored value matches bcrypt format | ✅ Yes |
+| `bcrypt.compare` succeeds | ✅ Yes |
+| `password` leaked in JSON | ❌ No |
+| `id` exposed in JSON | ✅ Yes |
+
+### Browser flow (headless Chromium)
+
+All 20 checks passed:
+
+- Home renders with correct title and hero
+- Register redirects to `/dashboard`
+- Token persisted; dashboard greets the user
+- Session survives refresh
+- Logout clears token and returns home
+- `/dashboard` while logged out redirects to `/login`
+- Invalid login shows a readable error and stays on the page
+- Successful login redirects back to the intended page
+- Client validation shows all four field errors
+- Invalid stored token redirects to login and is cleared
+- Mobile menu opens and exposes navigation links
+- 404 page renders
+- No unexpected console/page errors
+
+### Layout
+
+44/44 checks passed across `/`, `/login`, `/register`, `/dashboard`, and `/nope` at 1280, 1024, 768, and 390 px:
+
+- No horizontal overflow
+- Tap targets ≥ 32 px
+- Auth split panel on desktop, stacked on mobile
+
+### Build
+
 ```bash
-# 1. Clone repository
-git clone https://github.com/Mainak-2006/hashnode-clone.git
-cd hashnode-clone
-
-# 2. Install server dependencies
-cd server
-npm install
-
-# 3. Install client dependencies
-cd ../client
-npm install
-
-# 4. Set up environment variables
-cd ../server
-cp .env.example .env
-# Edit .env with your MongoDB URI and JWT secret
-
-# 5. Start the server
-cd ../server
-npm run dev   # or: node index.js
-# Server runs on http://localhost:5000
-
-# 6. Start the client (new terminal)
-cd client
-npm run dev   # Vite dev server
-# App runs on http://localhost:5173
+npm run build --prefix client
 ```
 
-### API Testing
+Completed successfully (Vite 6, ~258 kB JS / ~19 kB CSS before gzip).
+
+---
+
+## How to run
+
 ```bash
-# Register new user
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"testuser","email":"test@example.com","password":"password123"}'
+# Install
+npm install --prefix server
+npm install --prefix client
 
-# Login
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
+# Configure
+cp server/.env.example server/.env
+# Set JWT_SECRET and either MONGO_URI or USE_MEMORY_DB=true
+
+# Terminal 1
+cd server && npm run dev
+
+# Terminal 2
+cd client && npm run dev
+```
+
+Open <http://localhost:5173>.
+
+Optional demo user (requires a shared/real MongoDB):
+
+```bash
+cd server && npm run seed
+# demo@hashnode.dev / password123
 ```
 
 ---
 
-## 📈 Phase Completion Metrics
+## Notes and limitations
 
-| Metric | Value |
-|--------|-------|
-| **Phase Percentage** | 100% |
-| **Commits to GitHub** | 5 |
-| **Files Created** | 12+ |
-| **Lines of Code** | ~500+ |
-| **Dependencies Installed** | 20+ |
-| **API Endpoints** | 3 (register, login, me) |
-| **Models** | 1 (User) |
-| **Git History Cleanup** | ✅ Complete |
+- Phase 1 auth only; no posts, tags, feed, search, or profile editing yet.
+- In-memory DB data is lost on restart.
+- The client build is not deployed yet — deployment is Phase 4.
+- Stretch features (comments, likes, follows, uploads, dark mode) are intentionally deferred.
 
 ---
 
-## 📋 Phase 1 Checklist
+## Next: Phase 2 (Days 3–6)
 
-- [x] Project scaffolding (server + client folders)
-- [x] Express.js backend setup
-- [x] MongoDB connection with Mongoose
-- [x] User model with bcrypt password hashing
-- [x] JWT authentication (sign/verify)
-- [x] Registration API endpoint
-- [x] Login API endpoint
-- [x] Protected route placeholder
-- [x] Git initialization and first commit
-- [x] GitHub repository push
-- [x] Git history cleanup (node_modules, .vscode)
-- [x] .gitignore configuration
-- [x] README.md documentation
-- [x] PHASES.md roadmap
-- [x] Blog placeholder routes
+- `Post` and `Tag` models
+- Create/read/update/delete APIs with server-side ownership checks
+- Slugs, excerpts, reading time, and draft privacy
+- Markdown editor, preview, and syntax highlighting
+- Post editor, dashboard management, and a paginated feed shell
+
+See [`PHASES.md`](./PHASES.md) for the full schedule.
 
 ---
 
-## 🔄 Transition to Phase 2
+## Author
 
-**Phase 2 Goals (50% completion):**
-- Blog post Mongoose schema creation
-- Blog CRUD APIs with JWT protection
-- Markdown rendering with `react-markdown`
-- Syntax highlighting integration
-- Draft saving & publishing functionality
-- Blog listing with pagination
+**Mainak Kundu** — [GitHub](https://github.com/Mainak-2006)
 
-**Next Steps:**
-1. Proceed to Phase 2 when ready
-2. Install `react-markdown` and syntax highlighter in client
-3. Create Blog model, controller, and routes
-4. Build Markdown editor/preview components
-5. Commit and push to GitHub
-
----
-
-## 👤 Author
-
-**Mainak Kundu**  
-MERN Stack Developer  
-Portfolio: https://github.com/Mainak-2006  
-Inspired by: [Hashnode](https://hashnode.com)
-
----
-*Phase 1 Complete — Ready for Phase 2: Blog CRUD & Markdown Features*
+*Phase 1 complete — authentication foundation ready for content features.*
