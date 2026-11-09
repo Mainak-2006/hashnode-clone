@@ -119,7 +119,7 @@ hashnode-clone/
 │   │   └── errorMiddleware.js
 │   ├── models/                    # User, Post, Tag
 │   ├── routes/                    # auth, posts, tags, users
-│   ├── seed/seed.js               # 3 authors, 9 published posts, 1 private draft
+│   ├── seed/seed.js               # 3 authors, 8 published posts, 1 private draft
 │   ├── test/smoke.js              # 74-check API smoke suite
 │   ├── utils/                     # token, errors, slugify, excerpt, pagination, populate
 │   ├── .env.example
@@ -182,7 +182,7 @@ No local MongoDB? Set `USE_MEMORY_DB=true`. The server starts a temporary in-mem
 npm run seed --prefix server
 ```
 
-This creates or updates **3 authors**, **9 published posts**, and **1 private draft**.
+This creates or updates **3 authors**, **8 published posts**, and **1 private draft**.
 
 | User | Email | Password |
 |---|---|---|

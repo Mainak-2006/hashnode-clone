@@ -9,7 +9,7 @@
 
 ## Summary
 
-Phase 4 hardens the MVP for release. The client is responsive down to small phones, respects focus and reduced-motion preferences, and ships as split production bundles. A repeatable 74-check API suite covers auth, ownership, draft privacy, search, tags, profiles, and error handling. The demo seed now creates three authors, nine published posts, and one private draft. Deployment configuration and final documentation are included.
+Phase 4 hardens the MVP for release. The client is responsive down to small phones, respects focus and reduced-motion preferences, and ships as split production bundles. A repeatable 74-check API suite covers auth, ownership, draft privacy, search, tags, profiles, and error handling. The demo seed now creates three authors, eight published posts, and one private draft. Deployment configuration and final documentation are included.
 
 A live hosted deployment is the only remaining operational step and requires the repository owner's MongoDB Atlas, Render/Railway, and Vercel/Netlify accounts.
 
@@ -58,7 +58,7 @@ Seed data (`npm run seed`):
 | Ada Lovelace | `ada@hashnode.dev` | `password123` |
 | Grace Hopper | `grace@hashnode.dev` | `password123` |
 
-The seed creates **9 published posts** across all three authors and **1 private draft** owned by Demo Author, so draft privacy can be checked immediately.
+The seed creates **8 published posts** across all three authors and **1 private draft** owned by Demo Author, so draft privacy can be checked immediately.
 
 Build output after bundle splitting:
 
