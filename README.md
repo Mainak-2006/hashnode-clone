@@ -38,6 +38,7 @@ Post CRUD is available through the API and the Markdown editor is ready at the p
 
 ### Frontend
 - **React 18** + **Vite**
+- **Tailwind CSS v4** — utility-first styling across every component and page
 - **React Router** — client-side routing and protected routes
 - **Context API** — global auth state (`AuthContext`)
 - **Axios** — API client with JWT request/response interceptors
@@ -75,7 +76,7 @@ hashnode-clone/
 │   │   ├── context/AuthContext.jsx
 │   │   ├── hooks/               # useAuth, useDocumentTitle
 │   │   ├── pages/               # Home, Login, Register, Dashboard, MarkdownPlayground, NotFound
-│   │   ├── styles/global.css
+│   │   ├── styles/tailwind.css  # Tailwind entry + design tokens
 │   │   ├── utils/               # errors, clipboard
 │   │   ├── App.jsx
 │   │   └── main.jsx

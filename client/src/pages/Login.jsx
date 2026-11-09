@@ -8,6 +8,24 @@ import useAuth from '../hooks/useAuth';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 import { getErrorMessage, isValidEmail } from '../utils/errors';
 
+const FORM = 'mt-[30px] flex flex-col gap-[18px]';
+const FIELD = 'flex flex-col gap-[7px]';
+const LABEL = 'text-[0.86rem] font-semibold text-slate-700';
+const INPUT =
+  'h-full min-w-0 flex-1 border-0 bg-transparent text-[0.95rem] text-ink-900 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:text-slate-500';
+const TOGGLE =
+  'grid size-9 -mr-1.5 cursor-pointer place-items-center rounded-[9px] border-0 bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-700';
+const ERROR = 'text-[0.8rem] text-red-700';
+const BTN_PRIMARY =
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent bg-[linear-gradient(100deg,var(--color-brand-500),var(--color-violet-500))] px-[18px] py-[11px] text-[0.94rem] font-semibold whitespace-nowrap text-white no-underline shadow-brand transition-all duration-150 hover:-translate-y-px hover:text-white hover:no-underline hover:shadow-brand-lg active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-65 disabled:hover:translate-y-0';
+
+const controlClass = (error) =>
+  `flex h-12 items-center gap-2.5 rounded-xl border px-3.5 text-slate-400 transition-[border-color,box-shadow] focus-within:text-brand-600 ${
+    error
+      ? 'border-red-200 bg-red-50 focus-within:border-red-700 focus-within:shadow-ring-danger'
+      : 'border-slate-200 bg-white focus-within:border-brand-500 focus-within:shadow-ring'
+  }`;
+
 export default function Login() {
   useDocumentTitle('Log in');
   const { login, isAuthenticated, initializing } = useAuth();
@@ -72,12 +90,14 @@ export default function Login() {
         </p>
       }
     >
-      <form className="form" onSubmit={handleSubmit} noValidate>
+      <form className={FORM} onSubmit={handleSubmit} noValidate>
         <ErrorMessage message={formError} />
 
-        <div className="field">
-          <label htmlFor="email">Email address</label>
-          <div className={`field__control${fieldErrors.email ? ' field__control--error' : ''}`}>
+        <div className={FIELD}>
+          <label htmlFor="email" className={LABEL}>
+            Email address
+          </label>
+          <div className={controlClass(fieldErrors.email)}>
             <Mail size={17} aria-hidden="true" />
             <input
               id="email"
@@ -85,6 +105,7 @@ export default function Login() {
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
+              className={INPUT}
               value={values.email}
               onChange={handleChange}
               aria-invalid={Boolean(fieldErrors.email)}
@@ -93,15 +114,17 @@ export default function Login() {
             />
           </div>
           {fieldErrors.email && (
-            <p className="field__error" id="email-error">
+            <p className={ERROR} id="email-error">
               {fieldErrors.email}
             </p>
           )}
         </div>
 
-        <div className="field">
-          <label htmlFor="password">Password</label>
-          <div className={`field__control${fieldErrors.password ? ' field__control--error' : ''}`}>
+        <div className={FIELD}>
+          <label htmlFor="password" className={LABEL}>
+            Password
+          </label>
+          <div className={controlClass(fieldErrors.password)}>
             <Lock size={17} aria-hidden="true" />
             <input
               id="password"
@@ -109,6 +132,7 @@ export default function Login() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="Your password"
+              className={INPUT}
               value={values.password}
               onChange={handleChange}
               aria-invalid={Boolean(fieldErrors.password)}
@@ -117,7 +141,7 @@ export default function Login() {
             />
             <button
               type="button"
-              className="field__toggle"
+              className={TOGGLE}
               onClick={() => setShowPassword((visible) => !visible)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
               tabIndex={-1}
@@ -126,13 +150,13 @@ export default function Login() {
             </button>
           </div>
           {fieldErrors.password && (
-            <p className="field__error" id="password-error">
+            <p className={ERROR} id="password-error">
               {fieldErrors.password}
             </p>
           )}
         </div>
 
-        <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
+        <button type="submit" className={`${BTN_PRIMARY} w-full`} disabled={submitting}>
           {submitting ? (
             <>
               <LoadingSpinner inline label="Logging in" />

@@ -12,7 +12,7 @@ export default function Avatar({ name = '', src = '', size = 40, className = '' 
   if (src) {
     return (
       <img
-        className={`avatar ${className}`}
+        className={`shrink-0 rounded-full bg-slate-100 object-cover ${className}`}
         style={style}
         src={src}
         alt={name ? `${name}'s avatar` : 'User avatar'}
@@ -25,7 +25,11 @@ export default function Avatar({ name = '', src = '', size = 40, className = '' 
   }
 
   return (
-    <span className={`avatar avatar--initials ${className}`} style={style} aria-hidden="true">
+    <span
+      className={`inline-grid shrink-0 place-items-center rounded-full font-bold tracking-[0.02em] text-white [background-image:linear-gradient(135deg,var(--color-brand-500),var(--color-violet-500))] ${className}`}
+      style={style}
+      aria-hidden="true"
+    >
       {initials || '?'}
     </span>
   );

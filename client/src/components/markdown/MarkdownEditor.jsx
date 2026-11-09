@@ -56,6 +56,13 @@ const KEYBOARD_SHORTCUTS = {
   k: 'link',
 };
 
+const tabClass = (selected) =>
+  `inline-flex cursor-pointer items-center gap-1.5 rounded-full border-0 px-3 py-1.5 text-[0.8rem] font-semibold transition-colors ${
+    selected
+      ? 'bg-ink-900 text-white hover:bg-ink-900 hover:text-white'
+      : 'bg-transparent text-slate-500 hover:bg-slate-100 hover:text-ink-900'
+  }`;
+
 export default function MarkdownEditor({
   id,
   label = 'Content',
@@ -114,21 +121,31 @@ export default function MarkdownEditor({
   const wordCount = value.trim() ? value.trim().split(/\s+/).length : 0;
 
   return (
-    <div className={`md-editor${error ? ' md-editor--error' : ''} ${className}`.trim()}>
-      <div className="md-editor__header">
-        <label className="md-editor__label" htmlFor={fieldId}>
+    <div
+      className={`overflow-hidden rounded-[18px] border bg-white shadow-soft transition-[border-color,box-shadow] ${
+        error
+          ? 'border-red-200 bg-red-50 focus-within:border-red-700 focus-within:shadow-ring-danger'
+          : 'border-slate-200 focus-within:border-brand-500 focus-within:shadow-ring'
+      } ${className}`.trim()}
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
+        <label className="text-[0.86rem] font-semibold text-slate-700" htmlFor={fieldId}>
           {label}
         </label>
 
         {withPreview && (
-          <div className="md-editor__tabs" role="tablist" aria-label="Editing mode">
+          <div
+            className="flex gap-0.5 rounded-full border border-slate-200 bg-white p-[3px]"
+            role="tablist"
+            aria-label="Editing mode"
+          >
             <button
               type="button"
               role="tab"
               id={`${fieldId}-write-tab`}
               aria-selected={mode === 'write'}
               aria-controls={`${fieldId}-write`}
-              className="md-editor__tab"
+              className={tabClass(mode === 'write')}
               onClick={() => setMode('write')}
             >
               <PencilLine size={14} aria-hidden="true" />
@@ -140,7 +157,7 @@ export default function MarkdownEditor({
               id={`${fieldId}-preview-tab`}
               aria-selected={mode === 'preview'}
               aria-controls={`${fieldId}-preview`}
-              className="md-editor__tab"
+              className={tabClass(mode === 'preview')}
               onClick={() => setMode('preview')}
             >
               <Eye size={14} aria-hidden="true" />
@@ -152,9 +169,16 @@ export default function MarkdownEditor({
 
       {mode === 'write' ? (
         <div id={`${fieldId}-write`} role="tabpanel" aria-labelledby={`${fieldId}-write-tab`}>
-          <div className="md-editor__toolbar" role="toolbar" aria-label="Markdown formatting">
+          <div
+            className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-white px-2.5 py-[7px] max-[560px]:flex-nowrap max-[560px]:overflow-x-auto"
+            role="toolbar"
+            aria-label="Markdown formatting"
+          >
             {TOOLBAR_GROUPS.map((group, index) => (
-              <div className="md-editor__toolbar-group" key={index}>
+              <div
+                className="mr-1 flex items-center gap-0.5 border-r border-slate-200 pr-2 last:mr-0 last:border-r-0 last:pr-0 max-[560px]:shrink-0"
+                key={index}
+              >
                 {group.map(({ command: commandId, icon: Icon }) => {
                   const command = MARKDOWN_COMMANDS[commandId];
                   const title = command.shortcut ? `${command.label} (${command.shortcut})` : command.label;
@@ -162,7 +186,7 @@ export default function MarkdownEditor({
                     <button
                       key={commandId}
                       type="button"
-                      className="md-editor__tool"
+                      className="grid size-[34px] cursor-pointer place-items-center rounded-lg border-0 bg-transparent text-slate-600 transition-colors hover:bg-slate-100 hover:text-ink-900 disabled:cursor-not-allowed disabled:opacity-45"
                       title={title}
                       aria-label={command.label}
                       disabled={disabled}
@@ -180,7 +204,7 @@ export default function MarkdownEditor({
           <textarea
             ref={textareaRef}
             id={fieldId}
-            className="md-editor__textarea"
+            className="block min-h-[280px] w-full resize-y border-0 bg-white px-5 py-[18px] font-mono text-[0.9rem] leading-[1.7] text-ink-900 tab-2 outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:text-slate-500"
             value={value}
             rows={rows}
             placeholder={placeholder}
@@ -196,17 +220,19 @@ export default function MarkdownEditor({
           id={`${fieldId}-preview`}
           role="tabpanel"
           aria-labelledby={`${fieldId}-preview-tab`}
-          className="md-editor__preview"
+          className="max-h-[640px] min-h-[280px] overflow-y-auto px-7 py-[26px] max-md:px-5 max-md:py-5 max-[560px]:px-[18px]"
         >
           {value.trim() ? (
             <MarkdownPreview content={value} />
           ) : (
-            <p className="md-editor__empty">Nothing to preview yet — start writing in the Write tab.</p>
+            <p className="m-0 py-16 text-center text-[0.9rem] text-slate-400">
+              Nothing to preview yet — start writing in the Write tab.
+            </p>
           )}
         </div>
       )}
 
-      <div className="md-editor__footer">
+      <div className="flex items-center justify-between gap-3 border-t border-slate-200 bg-slate-50 px-4 py-[9px] text-[0.76rem] text-slate-500">
         <span>
           {wordCount} {wordCount === 1 ? 'word' : 'words'}
         </span>
@@ -214,11 +240,11 @@ export default function MarkdownEditor({
       </div>
 
       {error && (
-        <p className="field__error md-editor__message" id={errorId}>
+        <p className="m-0 px-4 pb-3 text-[0.8rem] text-red-700" id={errorId}>
           {error}
         </p>
       )}
-      {hint && !error && <p className="field__hint md-editor__message">{hint}</p>}
+      {hint && !error && <p className="m-0 px-4 pb-3 text-[0.8rem] text-slate-500">{hint}</p>}
     </div>
   );
 }

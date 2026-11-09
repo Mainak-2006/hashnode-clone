@@ -99,7 +99,7 @@ client/
 │   ├── pages/Register.jsx
 │   ├── pages/Dashboard.jsx
 │   ├── pages/NotFound.jsx
-│   ├── styles/global.css
+│   ├── styles/tailwind.css
 │   ├── utils/errors.js
 │   ├── App.jsx
 │   └── main.jsx

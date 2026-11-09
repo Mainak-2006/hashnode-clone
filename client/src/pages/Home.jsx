@@ -36,88 +36,123 @@ const FEATURES = [
   },
 ];
 
+const BTN_PRIMARY =
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent bg-[linear-gradient(100deg,var(--color-brand-500),var(--color-violet-500))] px-6 py-3.5 text-base font-semibold whitespace-nowrap text-white no-underline shadow-brand transition-all duration-150 hover:-translate-y-px hover:text-white hover:no-underline hover:shadow-brand-lg active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500';
+
+const BTN_GHOST =
+  'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3.5 text-base font-semibold whitespace-nowrap text-slate-700 no-underline shadow-soft transition-all duration-150 hover:-translate-y-px hover:border-slate-300 hover:bg-slate-50 hover:text-ink-900 hover:no-underline active:translate-y-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500';
+
 export default function Home() {
   useDocumentTitle('Home');
   const { isAuthenticated, user } = useAuth();
 
   return (
     <>
-      <section className="hero">
-        <div className="container hero__inner">
-          <span className="hero__eyebrow">
+      <section className="relative overflow-hidden border-b border-slate-200 bg-white [background-image:radial-gradient(760px_420px_at_12%_-10%,rgba(41,98,255,0.16),transparent_62%),radial-gradient(680px_400px_at_88%_0%,rgba(124,58,237,0.15),transparent_60%)]">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-35 [background-image:linear-gradient(var(--color-slate-200)_1px,transparent_1px),linear-gradient(90deg,var(--color-slate-200)_1px,transparent_1px)] [background-size:56px_56px] [mask-image:radial-gradient(ellipse_at_50%_0%,#000_20%,transparent_78%)]"
+          aria-hidden="true"
+        />
+
+        <div className="relative z-1 mx-auto w-full max-w-[900px] px-6 py-[92px] text-center max-md:px-[18px] max-md:pt-16 max-md:pb-[54px]">
+          <span className="inline-flex items-center gap-[7px] rounded-full border border-[rgba(41,98,255,0.24)] bg-[rgba(41,98,255,0.07)] px-3.5 py-[7px] text-[0.8rem] font-semibold text-brand-600">
             <Sparkles size={15} aria-hidden="true" />
             Developer-first publishing, built on MERN
           </span>
 
-          <h1 className="hero__title">
-            Where developers <span className="text-gradient">write, ship, and share</span> what they
-            build.
+          <h1 className="mt-[22px] text-[clamp(2.15rem,5vw,3.6rem)] font-extrabold leading-[1.08] tracking-[-0.035em]">
+            Where developers{' '}
+            <span className="bg-[linear-gradient(100deg,var(--color-brand-500)_0%,var(--color-violet-500)_70%)] bg-clip-text text-transparent">
+              write, ship, and share
+            </span>{' '}
+            what they build.
           </h1>
 
-          <p className="hero__lede">
+          <p className="mx-auto mt-5 max-w-[640px] text-[1.08rem] text-slate-600">
             Hashnode Clone is a Markdown-powered blogging platform for technical writing: code-heavy
             articles, developer tags, and a public feed — without the noise.
           </p>
 
-          <div className="hero__actions">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 max-[560px]:flex-col max-[560px]:items-stretch">
             {isAuthenticated ? (
               <>
-                <Link to="/dashboard" className="btn btn--primary btn--lg">
+                <Link to="/dashboard" className={`${BTN_PRIMARY} max-[560px]:w-full`}>
                   Go to your dashboard
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
-                <p className="hero__welcome">
+                <p className="basis-full text-[0.92rem] text-slate-500">
                   Signed in as <strong>{user?.name}</strong>
                 </p>
               </>
             ) : (
               <>
-                <Link to="/register" className="btn btn--primary btn--lg">
+                <Link to="/register" className={`${BTN_PRIMARY} max-[560px]:w-full`}>
                   Start writing free
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
-                <Link to="/login" className="btn btn--ghost btn--lg">
+                <Link to="/login" className={`${BTN_GHOST} max-[560px]:w-full`}>
                   Log in
                 </Link>
               </>
             )}
           </div>
 
-          <dl className="hero__stats">
+          <dl className="mx-auto mt-[46px] grid max-w-[620px] grid-cols-4 gap-2.5 rounded-[18px] border border-slate-200 bg-white/72 p-[18px] shadow-card backdrop-blur-[8px] max-md:grid-cols-2 max-md:text-center">
             <div>
-              <dt>Stack</dt>
-              <dd>MERN</dd>
+              <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                Stack
+              </dt>
+              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">MERN</dd>
             </div>
             <div>
-              <dt>Authoring</dt>
-              <dd>Markdown</dd>
+              <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                Authoring
+              </dt>
+              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">Markdown</dd>
             </div>
             <div>
-              <dt>Sessions</dt>
-              <dd>JWT</dd>
+              <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                Sessions
+              </dt>
+              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">JWT</dd>
             </div>
             <div>
-              <dt>Phase</dt>
-              <dd>1 of 4</dd>
+              <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-slate-500">
+                Phase
+              </dt>
+              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">1 of 4</dd>
             </div>
           </dl>
         </div>
       </section>
 
-      <section className="section container" aria-labelledby="features-heading">
-        <div className="section__header">
-          <h2 id="features-heading">Everything a developer blog needs</h2>
-          <p>Built to scale from a weekend project to a real publishing platform.</p>
+      <section
+        className="mx-auto w-full max-w-[1140px] px-6 py-[76px] max-md:px-[18px] max-md:py-14"
+        aria-labelledby="features-heading"
+      >
+        <div className="mx-auto mb-10 max-w-[620px] text-center">
+          <h2 id="features-heading" className="text-[clamp(1.6rem,3vw,2.1rem)] font-extrabold">
+            Everything a developer blog needs
+          </h2>
+          <p className="mt-3 text-base text-slate-500">
+            Built to scale from a weekend project to a real publishing platform.
+          </p>
         </div>
 
-        <div className="card-grid">
+        <div className="grid grid-cols-1 gap-[18px] min-[561px]:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, body }) => (
-            <article className="feature-card" key={title}>
-              <span className="feature-card__icon" aria-hidden="true">
+            <article
+              key={title}
+              className="rounded-[18px] border border-slate-200 bg-white p-[26px] shadow-soft transition duration-200 hover:-translate-y-[3px] hover:border-[rgba(41,98,255,0.35)] hover:shadow-card"
+            >
+              <span
+                className="mb-4 inline-grid size-[42px] place-items-center rounded-xl bg-[rgba(41,98,255,0.1)] text-brand-600"
+                aria-hidden="true"
+              >
                 <Icon size={20} />
               </span>
-              <h3>{title}</h3>
-              <p>{body}</p>
+              <h3 className="text-[1.05rem] font-bold">{title}</h3>
+              <p className="mt-2 text-[0.93rem] text-slate-500">{body}</p>
             </article>
           ))}
         </div>

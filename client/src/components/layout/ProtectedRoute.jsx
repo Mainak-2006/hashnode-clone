@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children }) {
 
   if (initializing) {
     return (
-      <div className="page page--centered">
+      <div className="grid min-h-[calc(100vh-70px-260px)] place-items-center px-6 py-14 max-[560px]:px-[18px] max-[560px]:py-10">
         <LoadingSpinner label="Restoring your session…" />
       </div>
     );

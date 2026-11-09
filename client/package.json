@@ -19,7 +19,9 @@
     "remark-gfm": "^4.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.3.5",
     "vite": "^6.0.7"
   }
 }
