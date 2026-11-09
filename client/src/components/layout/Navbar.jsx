@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LogOut, Menu, X } from 'lucide-react';
+import { LogOut, Menu, PenLine, Settings, X } from 'lucide-react';
 import Brand from '../Brand';
 import Avatar from '../ui/Avatar';
 import useAuth from '../../hooks/useAuth';
+import { profilePath } from '../../utils/format';
 
 const BTN_GHOST =
   'inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[0.87rem] font-semibold whitespace-nowrap text-slate-700 no-underline shadow-soft transition-all duration-150 hover:border-slate-300 hover:bg-slate-50 hover:text-ink-900 hover:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-65';
@@ -71,6 +72,12 @@ export default function Navbar() {
           <NavLink to="/" className={linkClass} end>
             Home
           </NavLink>
+          <NavLink to="/feed" className={linkClass}>
+            Feed
+          </NavLink>
+          <NavLink to="/tags" className={linkClass}>
+            Tags
+          </NavLink>
 
           {isAuthenticated ? (
             <>
@@ -78,16 +85,35 @@ export default function Navbar() {
                 Dashboard
               </NavLink>
 
-              <div className="ml-2.5 flex items-center gap-[9px] rounded-full border border-slate-200 bg-white py-1 pr-3 pl-1 max-[900px]:mt-1.5 max-[900px]:ml-0 max-[900px]:justify-start max-[900px]:rounded-xl max-[900px]:px-3 max-[900px]:py-2">
+              <Link to="/editor/new" className={`${BTN_PRIMARY} ml-1 max-[900px]:mt-1.5 max-[900px]:ml-0 max-[900px]:w-full`}>
+                <PenLine size={15} aria-hidden="true" />
+                Write
+              </Link>
+
+              <Link
+                to={profilePath(user?.id)}
+                className="ml-1 flex items-center gap-[9px] rounded-full border border-slate-200 bg-white py-1 pr-3 pl-1 no-underline transition-colors hover:border-slate-300 hover:bg-slate-50 hover:no-underline max-[1080px]:pr-1 max-[900px]:mt-1.5 max-[900px]:ml-0 max-[900px]:justify-start max-[900px]:rounded-xl max-[900px]:px-3 max-[900px]:py-2"
+                title="View your public profile"
+              >
                 <Avatar name={user?.name} src={user?.avatarUrl} size={34} />
-                <span className="max-w-[140px] truncate text-[0.88rem] font-semibold text-slate-700">
+                <span className="max-w-[140px] truncate text-[0.88rem] font-semibold text-slate-700 max-[1080px]:hidden max-[900px]:inline">
                   {user?.name}
                 </span>
-              </div>
+              </Link>
+
+              <Link
+                to="/settings"
+                className={`${BTN_GHOST} ml-0.5 size-10 px-0 max-[900px]:ml-0 max-[900px]:h-auto max-[900px]:w-full max-[900px]:px-3.5 max-[900px]:py-2`}
+                aria-label="Profile settings"
+                title="Profile settings"
+              >
+                <Settings size={16} aria-hidden="true" />
+                <span className="hidden max-[900px]:inline">Settings</span>
+              </Link>
 
               <button
                 type="button"
-                className={`${BTN_GHOST} ml-0.5 max-[900px]:w-full`}
+                className={`${BTN_GHOST} ml-0.5 max-[900px]:ml-0 max-[900px]:w-full`}
                 onClick={handleLogout}
               >
                 <LogOut size={16} aria-hidden="true" />

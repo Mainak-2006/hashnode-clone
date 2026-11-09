@@ -1,5 +1,15 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, Code2, Layers, PenLine, ShieldCheck, Sparkles, Tags } from 'lucide-react';
+import {
+  ArrowRight,
+  BookOpen,
+  Code2,
+  Compass,
+  Layers,
+  PenLine,
+  ShieldCheck,
+  Sparkles,
+  Tags,
+} from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import useDocumentTitle from '../hooks/useDocumentTitle';
 
@@ -80,6 +90,10 @@ export default function Home() {
                   Go to your dashboard
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
+                <Link to="/feed" className={`${BTN_GHOST} max-[560px]:w-full`}>
+                  <Compass size={18} aria-hidden="true" />
+                  Explore the feed
+                </Link>
                 <p className="basis-full text-[0.92rem] text-slate-500">
                   Signed in as <strong>{user?.name}</strong>
                 </p>
@@ -89,6 +103,10 @@ export default function Home() {
                 <Link to="/register" className={`${BTN_PRIMARY} max-[560px]:w-full`}>
                   Start writing free
                   <ArrowRight size={18} aria-hidden="true" />
+                </Link>
+                <Link to="/feed" className={`${BTN_GHOST} max-[560px]:w-full`}>
+                  <Compass size={18} aria-hidden="true" />
+                  Explore the feed
                 </Link>
                 <Link to="/login" className={`${BTN_GHOST} max-[560px]:w-full`}>
                   Log in
@@ -118,9 +136,9 @@ export default function Home() {
             </div>
             <div>
               <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.1em] text-slate-500">
-                Phase
+                Release
               </dt>
-              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">1 of 4</dd>
+              <dd className="mt-1 text-[1.05rem] font-bold text-ink-900">v1.0</dd>
             </div>
           </dl>
         </div>
@@ -155,6 +173,29 @@ export default function Home() {
               <p className="mt-2 text-[0.93rem] text-slate-500">{body}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-[1140px] px-6 pb-[76px] max-md:px-[18px] max-md:pb-14">
+        <div className="flex flex-wrap items-center justify-between gap-5 rounded-[22px] border border-slate-200 bg-[linear-gradient(100deg,rgba(41,98,255,0.09),rgba(124,58,237,0.09))] p-7 shadow-soft max-[560px]:p-5">
+          <div className="max-w-[620px]">
+            <h2 className="text-[clamp(1.35rem,2.4vw,1.8rem)] font-extrabold">
+              Read what developers are building
+            </h2>
+            <p className="mt-2 text-[0.95rem] text-slate-600">
+              Browse the public feed, filter by tag, or search for a topic. No account needed.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <Link to="/feed" className={BTN_PRIMARY}>
+              <Compass size={17} aria-hidden="true" />
+              Explore the feed
+            </Link>
+            <Link to="/tags" className={BTN_GHOST}>
+              <Tags size={17} aria-hidden="true" />
+              Browse tags
+            </Link>
+          </div>
         </div>
       </section>
     </>

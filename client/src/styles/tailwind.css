@@ -23,3 +23,48 @@
   --shadow-ring: 0 0 0 4px rgba(41, 98, 255, 0.18);
   --shadow-ring-danger: 0 0 0 4px rgba(185, 28, 28, 0.12);
 }
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-width: 320px;
+    background-color: #fff;
+    color: var(--color-ink-800);
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: rgba(41, 98, 255, 0.18);
+    color: var(--color-ink-900);
+  }
+
+  /* A consistent keyboard focus ring on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+
+  /* Long code lines and wide tables should scroll inside their own box. */
+  pre,
+  table {
+    max-width: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

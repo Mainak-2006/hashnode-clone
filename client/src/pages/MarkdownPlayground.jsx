@@ -81,7 +81,7 @@ export default function MarkdownPlayground() {
     <div className="mx-auto w-full max-w-[1160px] px-6 pt-14 pb-[72px] max-md:px-[18px] max-[560px]:pt-10 max-[560px]:pb-14">
       <header className="mb-[30px] max-w-[640px]">
         <p className="mb-1.5 text-[0.74rem] font-bold uppercase tracking-[0.14em] text-brand-600">
-          Day 5 · Markdown
+          Markdown lab
         </p>
         <h1 className="text-[clamp(1.7rem,3vw,2.25rem)] font-extrabold">Markdown editor &amp; preview</h1>
         <p className="mt-3 text-[0.98rem] text-slate-500">
@@ -123,7 +123,7 @@ export default function MarkdownPlayground() {
 
           <p className="mt-[22px] flex items-center gap-2 border-t border-dashed border-slate-200 pt-4 text-[0.8rem] text-slate-500">
             <CheckCircle2 size={15} className="shrink-0 text-emerald-700" aria-hidden="true" />
-            The full post editor and dashboard arrive on Day 6.
+            The full editor is available from the dashboard — try it on a real post.
           </p>
         </aside>
       </div>
