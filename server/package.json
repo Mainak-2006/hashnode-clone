@@ -7,11 +7,15 @@
     "dev": "nodemon server.js",
     "start": "node server.js",
     "seed": "node seed/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:api",
+    "test:api": "node test/smoke.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",

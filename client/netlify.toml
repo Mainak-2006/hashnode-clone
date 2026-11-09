@@ -1,0 +1,15 @@
+# Netlify configuration for the Vite client.
+# Set VITE_API_URL in Site settings → Environment variables, e.g.
+#   VITE_API_URL=https://hashnode-clone-api.onrender.com/api
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA fallback so direct route loads (for example /posts/my-slug) reach React.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

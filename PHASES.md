@@ -3,7 +3,8 @@
 A full-stack developer blogging platform inspired by Hashnode, built with the MERN stack. This roadmap compresses the original four phases into **13 consecutive working days**, with a working milestone, commit, and tag at the end of each phase.
 
 - **Start:** Sunday, November 8, 2026
-- **Finish:** Friday, November 20, 2026
+- **Planned finish:** Friday, November 20, 2026
+- **Actual implementation finish:** Monday, November 9, 2026
 - **Daily effort:** 4–6 focused hours
 - **Stack:** MongoDB, Express.js, React.js, Node.js, Mongoose, JWT, bcryptjs, Axios, React Router, Context API, React Markdown, syntax highlighter, Vite
 - **Constraint:** MVP first. Stretch goals must not delay Phase 4.
@@ -82,7 +83,7 @@ The final implementation follows the PRD: `Post` model and `/api/posts` routes r
 
 ## Phase 2 — Blog CRUD & Markdown (Days 3–6, 50%)
 
-> **Status: Days 3–5 complete (Nov 9, 2026).** `Post`/`Tag` models, the full post CRUD API with server-side ownership, drafts hidden from public routes, and the tags API are implemented and verified with a 64-check API matrix. Day 5 adds the Markdown editor, GFM preview, Prism highlighting, and copy-code buttons. Day 6 (post editor, dashboard, feed shell) remains before the phase gate.
+> **Status: complete (Nov 9, 2026).** `Post`/`Tag` models, the full post CRUD API with server-side ownership, drafts hidden from public routes, and the tags API are implemented and verified with a 64-check API matrix. Day 5 adds the Markdown editor, GFM preview, Prism highlighting, and copy-code buttons. Day 6 adds the create/edit post editor, dashboard management, post cards, and the paginated public feed. See [`PHASE-2-COMPLETED.md`](./PHASE-2-COMPLETED.md).
 
 ### Day 3 — Models and read/create APIs
 
@@ -133,6 +134,8 @@ The final implementation follows the PRD: `Post` model and `/api/posts` routes r
 
 ## Phase 3 — Tags, Filtering, Search & Profiles (Days 7–9, 75%)
 
+> **Status: complete (Nov 9, 2026).** The public feed supports search and load-more pagination; tag browsing, tag pages, post detail, public profiles, settings, and the protected-route audit are implemented and verified. See [`PHASE-3-COMPLETED.md`](./PHASE-3-COMPLETED.md).
+
 ### Day 7 — Complete public feed and search
 
 - Finish the Feed page: newest-first cards with cover, title, excerpt, author, date, tags, and reading time.
@@ -167,6 +170,8 @@ The final implementation follows the PRD: `Post` model and `/api/posts` routes r
 ---
 
 ## Phase 4 — Polish, QA & Deployment (Days 10–13, 100%)
+
+> **Status: implementation, QA, deployment configuration, and documentation complete (Nov 9, 2026).** Responsive/focus/reduced-motion polish, a 74-check API smoke suite, an expanded demo seed, split production bundles, Render/Vercel/Netlify configuration, and the final documentation are in place. A live hosted deployment still requires the owner's cloud credentials. See [`PHASE-4-COMPLETED.md`](./PHASE-4-COMPLETED.md).
 
 ### Day 10 — Responsive and UX polish
 
@@ -269,11 +274,11 @@ If a day slips, take time from Day 13’s buffer — never from authentication, 
 - [x] Day 3 — Post/Tag models; create/read APIs
 - [x] Day 4 — Ownership; edit/delete; tags API
 - [x] Day 5 — Markdown editor + preview + highlighting
-- [ ] Day 6 — Post editor + dashboard + feed shell → `phase-2-content`
-- [ ] Day 7 — Public feed + search + pagination
-- [ ] Day 8 — Tags pages + post detail
-- [ ] Day 9 — Profiles + settings + route audit → `phase-3-public`
-- [ ] Day 10 — Responsive and UX polish
-- [ ] Day 11 — QA, security tests, seed data
-- [ ] Day 12 — Deploy backend + frontend
-- [ ] Day 13 — Final verification, docs, release → `v1.0.0`
+- [x] Day 6 — Post editor + dashboard + feed shell → `phase-2-content`
+- [x] Day 7 — Public feed + search + pagination
+- [x] Day 8 — Tags pages + post detail
+- [x] Day 9 — Profiles + settings + route audit → `phase-3-public`
+- [x] Day 10 — Responsive and UX polish
+- [x] Day 11 — QA, security tests, seed data
+- [x] Day 12 — Deployment configuration (live deploy requires cloud credentials)
+- [x] Day 13 — Final verification, docs, release → `v1.0.0`
