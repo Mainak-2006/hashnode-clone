@@ -1,8 +1,8 @@
 # Hashnode Clone — MERN Developer Blogging Platform
 
-A developer-first blogging platform inspired by [Hashnode](https://hashnode.com), built with the MERN stack. The authentication foundation and the **content API (Post + Tag)** are complete; Markdown editing and the public UI follow in the remaining phases of the 13-day plan (see [`PHASES.md`](./PHASES.md)).
+A developer-first blogging platform inspired by [Hashnode](https://hashnode.com), built with the MERN stack. The authentication foundation, the **content API (Post + Tag)**, and the **Markdown editor/preview** are complete; the dashboard and public UI follow in the remaining phases of the 13-day plan (see [`PHASES.md`](./PHASES.md)).
 
-> **Status:** Phase 1 complete. Phase 2 Days 3–4 complete — Post/Tag models, CRUD, ownership checks, slugs, excerpts, reading time, pagination, search, and tag APIs are live.
+> **Status:** Phase 1 complete. Phase 2 Days 3–5 complete — Post/Tag models, CRUD, ownership checks, slugs, excerpts, reading time, pagination, search, tag APIs, Markdown editing, GFM preview, and Prism highlighting are live.
 
 ---
 
@@ -21,11 +21,16 @@ A developer-first blogging platform inspired by [Hashnode](https://hashnode.com)
 - **Draft privacy** — drafts never appear in the public feed, search results, or by direct slug
 - **Slugs, excerpts & reading time** — unique slugs with collision suffixes, Markdown-stripped excerpts, and a reading-time virtual
 - **Tag API** — find-or-create tags (max 5), published-post counts, and per-tag post lists
+- **Markdown editor** — formatting toolbar, toggleable Write/Preview tabs, word count, and Ctrl/Cmd shortcuts for bold, italic, inline code, and links
+- **Markdown preview** — GitHub-flavored Markdown via `react-markdown` + `remark-gfm` (tables, task lists, strikethrough) with safe defaults
+- **Syntax highlighting** — Prism highlighting for JavaScript, TypeScript, JSX/TSX, Python, JSON, Bash, HTML, CSS, YAML, SQL, C/C++, C#, Go, Rust, Ruby, PHP, and more, with common fence aliases
+- **Copy-code buttons** — every fenced block has a copy button with a modern Clipboard API fallback
+- **Raw HTML stays inert** — the preview never uses `rehype-raw` and skips embedded HTML, so posts cannot inject markup
 - **Consistent API errors** — centralized `400/401/403/404/500` responses
 - **Health check** — `GET /api/health` reports server and database status
 - **In-memory database option** — run without installing MongoDB by setting `USE_MEMORY_DB=true`
 
-Post CRUD is available through the API. The Markdown editor, feed UI, tag pages, and profiles arrive in Days 5–9.
+Post CRUD is available through the API and the Markdown editor is ready at the protected `/markdown` playground. The post editor, dashboard, feed UI, tag pages, and profiles arrive in Days 6–9.
 
 ---
 
@@ -36,6 +41,8 @@ Post CRUD is available through the API. The Markdown editor, feed UI, tag pages,
 - **React Router** — client-side routing and protected routes
 - **Context API** — global auth state (`AuthContext`)
 - **Axios** — API client with JWT request/response interceptors
+- **react-markdown** + **remark-gfm** — Markdown and GitHub-flavored Markdown rendering
+- **react-syntax-highlighter** — Prism code highlighting
 - **lucide-react** — icons
 
 ### Backend
@@ -62,13 +69,14 @@ hashnode-clone/
 │   │   ├── components/
 │   │   │   ├── auth/AuthLayout.jsx
 │   │   │   ├── layout/          # Layout, Navbar, Footer, ProtectedRoute
+│   │   │   ├── markdown/        # MarkdownEditor, MarkdownPreview, commands, languages
 │   │   │   ├── ui/              # Avatar, LoadingSpinner, ErrorMessage
 │   │   │   └── Brand.jsx
 │   │   ├── context/AuthContext.jsx
 │   │   ├── hooks/               # useAuth, useDocumentTitle
-│   │   ├── pages/               # Home, Login, Register, Dashboard, NotFound
+│   │   ├── pages/               # Home, Login, Register, Dashboard, MarkdownPlayground, NotFound
 │   │   ├── styles/global.css
-│   │   ├── utils/errors.js
+│   │   ├── utils/               # errors, clipboard
 │   │   ├── App.jsx
 │   │   └── main.jsx
 │   ├── .env.example
@@ -158,6 +166,8 @@ npm run dev
 ```
 
 Open <http://localhost:5173>. During development the Vite proxy forwards `/api` requests to the API, so no client env vars are required.
+
+Sign in and open <http://localhost:5173/markdown> to try the Markdown editor, its formatting toolbar, and the preview with syntax highlighting.
 
 ### Demo user (optional)
 
@@ -379,7 +389,20 @@ This project follows a 13-day plan. See [`PHASES.md`](./PHASES.md) for daily tas
 | **3 — Feed, Search & Profiles** | 7–9 | 75% | Public feed, search, tag pages, post detail, profiles | `phase-3-public` |
 | **4 — Polish, QA & Deploy** | 10–13 | 100% | Responsive polish, security QA, deployment, docs | `v1.0.0` |
 
-**Current progress:** Phase 1 complete (tagged `phase-1-auth`). Phase 2 is in progress — Days 3–4 (Post/Tag models and the full content API) are complete; Days 5–6 add the Markdown editor, dashboard, and feed shell before the `phase-2-content` gate.
+**Current progress:** Phase 1 complete (tagged `phase-1-auth`). Phase 2 is in progress — Days 3–5 (Post/Tag models, the full content API, and the Markdown editor/preview) are complete; Day 6 adds the post editor, dashboard, and feed shell before the `phase-2-content` gate.
+
+---
+
+## Verification performed for Day 5 (Markdown)
+
+- Toolbar commands verified for bold, italic, strikethrough, H1–H3, blockquotes, bulleted/numbered lists, inline code, fenced code, links, images, tables, and horizontal rules
+- Prefix commands toggle cleanly and apply to every selected line; headings replace (not stack) existing heading markers
+- Formatting actions restore the correct selection, and Ctrl/Cmd + B, I, E, K are wired to the common commands
+- Server-render check passed for headings, emphasis, inline code, external links, blockquotes, nested lists, task lists, GFM tables, and fenced code blocks
+- Prism highlighting confirmed for JavaScript with registered aliases (`js`, `ts`, `py`, `sh`, `html`, `yml`, …); unknown fence languages fall back to plain text
+- Each code block renders a language label and copy button (Clipboard API + `execCommand` fallback)
+- Raw HTML is skipped: `<script>` and other embedded HTML tags are not rendered (no `rehype-raw`, `skipHtml` enabled)
+- `npm run build --prefix client` completes successfully
 
 ---
 

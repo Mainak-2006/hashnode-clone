@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import MarkdownPlayground from './pages/MarkdownPlayground';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -19,6 +20,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="markdown"
+          element={
+            <ProtectedRoute>
+              <MarkdownPlayground />
             </ProtectedRoute>
           }
         />

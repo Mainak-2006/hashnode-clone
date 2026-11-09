@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { CalendarDays, LogOut, Mail, PenSquare, ShieldCheck, UserRound } from 'lucide-react';
+import { CalendarDays, FileCode2, LogOut, Mail, PenSquare, ShieldCheck, UserRound } from 'lucide-react';
 import Avatar from '../components/ui/Avatar';
 import useAuth from '../hooks/useAuth';
 import useDocumentTitle from '../hooks/useDocumentTitle';
@@ -34,15 +34,21 @@ export default function Dashboard() {
             <p className="eyebrow">Dashboard</p>
             <h1>Welcome back, {user?.name?.split(' ')[0] || 'developer'} 👋</h1>
             <p className="dashboard__subtitle">
-              Your account is set up. Writing tools arrive in Phase 2.
+              Your account is set up. The Markdown editor is ready to try.
             </p>
           </div>
         </div>
 
-        <button type="button" className="btn btn--ghost" onClick={handleLogout}>
-          <LogOut size={17} aria-hidden="true" />
-          Log out
-        </button>
+        <div className="dashboard__actions">
+          <Link to="/markdown" className="btn btn--ghost">
+            <FileCode2 size={17} aria-hidden="true" />
+            Markdown lab
+          </Link>
+          <button type="button" className="btn btn--ghost" onClick={handleLogout}>
+            <LogOut size={17} aria-hidden="true" />
+            Log out
+          </button>
+        </div>
       </header>
 
       <div className="dashboard__grid">
