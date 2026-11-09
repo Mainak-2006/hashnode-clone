@@ -1,0 +1,49 @@
+name: Keep API awake
+
+# Render's free web services spin down after ~15 minutes without traffic.
+# This workflow pings the health endpoint every 10 minutes so the instance
+# never reaches that idle window.
+#
+# Configure the target with a repository variable (Settings > Secrets and
+# variables > Actions > Variables):
+#   API_HEALTH_URL = https://<your-service>.onrender.com/api/health
+# If the variable is not set, the default below is used.
+#
+# Note: scheduled workflows only run on the repository's default branch.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping health endpoint
+        env:
+          HEALTH_URL: ${{ vars.API_HEALTH_URL || 'https://hashnode-clone-api.onrender.com/api/health' }}
+        run: |
+          set -u
+
+          for attempt in 1 2 3; do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 "$HEALTH_URL" 2>/dev/null || echo 000)
+            echo "Attempt ${attempt}: ${HEALTH_URL} -> HTTP ${code}"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            [ "$attempt" -lt 3 ] && sleep 20
+          done
+
+          # A cold start can take longer than a single attempt. Warn instead of
+          # failing so this job does not generate failure emails every run.
+          echo "::warning::Health check ended with HTTP ${code}. The service may still be waking up."
+          exit 0
