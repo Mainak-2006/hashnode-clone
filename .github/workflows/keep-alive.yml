@@ -1,13 +1,14 @@
 name: Keep API awake
 
 # Render's free web services spin down after ~15 minutes without traffic.
-# This workflow pings the health endpoint every 10 minutes so the instance
-# never reaches that idle window.
+# This workflow pings the service every 10 minutes so the instance never
+# reaches that idle window.
 #
 # Configure the target with a repository variable (Settings > Secrets and
 # variables > Actions > Variables):
 #   API_HEALTH_URL = https://<your-service>.onrender.com/api/health
-# If the variable is not set, the default below is used.
+# If the variable is not set, the default below is used. The site root is used
+# as a fallback so the ping still succeeds if the health route is unavailable.
 #
 # Note: scheduled workflows only run on the repository's default branch.
 
@@ -28,22 +29,36 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Ping health endpoint
+      - name: Ping service
         env:
           HEALTH_URL: ${{ vars.API_HEALTH_URL || 'https://hashnode-clone-api.onrender.com/api/health' }}
         run: |
           set -u
 
-          for attempt in 1 2 3; do
-            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 "$HEALTH_URL" 2>/dev/null || echo 000)
-            echo "Attempt ${attempt}: ${HEALTH_URL} -> HTTP ${code}"
-            if [ "$code" = "200" ]; then
-              exit 0
-            fi
-            [ "$attempt" -lt 3 ] && sleep 20
+          # Fall back to the origin root when the health route 404s, so a stale
+          # deployment (or a different endpoint layout) still keeps the app up.
+          origin=$(printf '%s' "$HEALTH_URL" | sed -E 's#(https?://[^/]+).*#\1/#')
+          targets="$HEALTH_URL"
+          [ "$origin" != "$HEALTH_URL" ] && targets="$targets $origin"
+
+          ok=""
+          for target in $targets; do
+            for attempt in 1 2 3; do
+              code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 60 "$target" 2>/dev/null || echo 000)
+              echo "Attempt ${attempt}: ${target} -> HTTP ${code}"
+              case "$code" in
+                2*|3*) ok="$target"; break 2 ;;
+              esac
+              [ "$attempt" -lt 3 ] && sleep 20
+            done
           done
 
-          # A cold start can take longer than a single attempt. Warn instead of
-          # failing so this job does not generate failure emails every run.
-          echo "::warning::Health check ended with HTTP ${code}. The service may still be waking up."
+          if [ -n "$ok" ]; then
+            echo "Service is awake (${ok})."
+            exit 0
+          fi
+
+          # A cold start can outlast all attempts. Warn instead of failing so
+          # this job does not generate a failure email every run.
+          echo "::warning::Service did not answer with HTTP 2xx/3xx. It may still be waking up."
           exit 0
