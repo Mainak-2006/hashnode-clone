@@ -48,8 +48,11 @@ jobs:
               echo "Attempt ${attempt}: ${target} -> HTTP ${code}"
               case "$code" in
                 2*|3*) ok="$target"; break 2 ;;
+                # Only retry transient failures (cold start / network). A 404
+                # means this target simply does not exist, so try the next one.
+                000|502|503|504) [ "$attempt" -lt 3 ] && sleep 20 ;;
+                *) break ;;
               esac
-              [ "$attempt" -lt 3 ] && sleep 20
             done
           done
 
